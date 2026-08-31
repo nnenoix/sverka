@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Сверка — аудит отчёта Wildberries</title>
+  <meta name="description" content="Загрузите еженедельный отчёт Wildberries — Сверка найдёт спорные удержания, штрафы и логистику и подготовит претензию. Всё в браузере, данные никуда не уходят." />
+  <meta name="theme-color" content="#0b0e13" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="./icon.svg" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./"><img src="./icon.svg" alt="" /> Сверка</a>
+    <span class="badge" title="Файл обрабатывается в браузере и никуда не загружается">
+      <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M12 1 3 5v6c0 5 3.8 9.7 9 11 5.2-1.3 9-6 9-11V5l-9-4Zm0 10.9h7c-.5 3.9-3.1 7.4-7 8.5V12H5V6.3l7-3.1v8.7Z"/></svg>
+      Данные не уходят из браузера
+    </span>
+  </header>
+
+  <main class="app">
+    <!-- Upload -->
+    <section id="stage-upload" class="stage">
+      <div class="hero">
+        <h1>Верни деньги, которые WB <span>удержал зря</span></h1>
+        <p>Загрузите еженедельный отчёт-детализацию Wildberries. Сверка пересоберёт расчёт, найдёт спорные штрафы, дубли удержаний и завышенную логистику — и подготовит готовую претензию. Всё считается прямо в браузере: файл никуда не загружается.</p>
+      </div>
+
+      <div id="drop" class="drop" tabindex="0" role="button" aria-label="Загрузить отчёт">
+        <svg class="drop__icon" viewBox="0 0 24 24" width="40" height="40" aria-hidden="true"><path fill="currentColor" d="M12 3l4 4h-3v6h-2V7H8l4-4Zm-7 12v4h14v-4h2v6H3v-6h2Z"/></svg>
+        <h2>Перетащите отчёт сюда</h2>
+        <p>XLSX или CSV из раздела «Финансовые отчёты» WB Партнёры</p>
+        <div class="drop__actions">
+          <label class="btn btn--primary">Выбрать файл<input id="fileInput" type="file" accept=".xlsx,.xls,.csv" hidden /></label>
+          <button class="btn btn--ghost" id="sampleBtn" type="button">Показать на примере</button>
+        </div>
+      </div>
+
+      <ol class="steps">
+        <li><b><i>1</i>Загрузите отчёт</b><span>Тот XLSX, что приходит каждый понедельник</span></li>
+        <li><b><i>2</i>Смотрите находки</b><span>Спорные удержания с суммами и причиной</span></li>
+        <li><b><i>3</i>Копируйте претензию</b><span>Готовый текст → в поддержку WB</span></li>
+      </ol>
+    </section>
+
+    <!-- Processing -->
+    <section id="stage-processing" class="stage hidden">
+      <div class="proc"><div class="spinner"></div><div><p id="procStatus" style="margin:0;font-weight:650">Читаю отчёт…</p><p style="margin:4px 0 0;color:var(--ink-2);font-size:13px">Обработка идёт на вашем устройстве</p></div></div>
+    </section>
+
+    <!-- Report -->
+    <section id="stage-report" class="stage hidden">
+      <div id="kpis" class="kpis"></div>
+      <div id="reconciliation" class="card"></div>
+
+      <div class="section-title"><h2>Спорные удержания</h2><span id="flagsSum" class="badge"></span></div>
+      <div id="flags"></div>
+
+      <details class="pnl-details card">
+        <summary>P&amp;L по артикулам</summary>
+        <div class="table-wrap"><table class="pnl" id="pnlTable"></table></div>
+      </details>
+
+      <div class="export-row">
+        <button class="btn btn--soft" id="exportClaims">Скачать все претензии (.txt)</button>
+        <button class="btn btn--soft" id="exportPnl">Скачать P&amp;L (.csv)</button>
+        <button class="btn btn--primary" id="againBtn">Другой отчёт</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>Считается полностью в браузере. Без аккаунта, без загрузки файлов на сервер, без доступа к вашему кабинету.</p>
+    <p class="foot__pro">Pro (история недель, авто-сверка тарифов по габаритам, Ozon, экспорт в Excel) — <a id="proLink" href="#pro">скоро</a></p>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="./vendor/sheetjs/xlsx.full.min.js"></script>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "name": "sverka",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Сверка — client-side Wildberries/Ozon report auditor. Finds disputable charges, drafts претензии. Zero backend, data never leaves the browser.",
+  "scripts": {
+    "test": "node --test",
+    "serve": "node server.mjs"
+  }
+}
