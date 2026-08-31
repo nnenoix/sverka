@@ -79,10 +79,12 @@ export function detectHeader(matrix) {
 }
 
 function isSaleGround(g) {
-  return /продаж/i.test(g);
+  return /продаж/i.test(g) && !/возмещ/i.test(g);
 }
 function isReturnGround(g) {
-  return /возврат/i.test(g);
+  // Exclude "Возмещение за выдачу и возврат товаров на ПВЗ" — it contains
+  // "возврат" but is a reimbursement line, not an actual return.
+  return /возврат/i.test(g) && !/возмещ/i.test(g);
 }
 
 /**
@@ -140,6 +142,7 @@ export function parseReport(matrix) {
 }
 
 const sum = (rows, key) => rows.reduce((a, r) => a + (r[key] || 0), 0);
+const sumAbs = (rows, key) => rows.reduce((a, r) => a + Math.abs(r[key] || 0), 0);
 
 /**
  * Aggregate the reconciliation totals and a per-article P&L.
@@ -152,8 +155,10 @@ export function buildPnL(parsed) {
   const sales = rows.filter((r) => r.isSale);
   const returns = rows.filter((r) => r.isReturn);
 
-  const realizedNet = sum(sales, 'realized') - sum(returns, 'realized');
-  const toTransferNet = sum(sales, 'toTransfer') - sum(returns, 'toTransfer');
+  // Returns reduce payout by their magnitude, whether the export stores return
+  // values as positive (raw WB) or already-negative (some processed exports).
+  const realizedNet = sum(sales, 'realized') - sumAbs(returns, 'realized');
+  const toTransferNet = sum(sales, 'toTransfer') - sumAbs(returns, 'toTransfer');
   const logistics = sum(rows, 'logistics');
   const penalties = sum(rows, 'penalties');
   const storage = sum(rows, 'storage');
@@ -172,9 +177,9 @@ export function buildPnL(parsed) {
     }
     const a = byArticle.get(key);
     if (r.isSale) a.qty += r.qty;
-    if (r.isReturn) a.qty -= r.qty;
-    a.realized += r.isReturn ? -r.realized : r.realized;
-    a.toTransfer += r.isReturn ? -r.toTransfer : r.toTransfer;
+    if (r.isReturn) a.qty -= Math.abs(r.qty);
+    a.realized += r.isReturn ? -Math.abs(r.realized) : r.realized;
+    a.toTransfer += r.isReturn ? -Math.abs(r.toTransfer) : r.toTransfer;
     a.logistics += r.logistics;
     a.penalties += r.penalties;
     a.storage += r.storage;

@@ -139,6 +139,21 @@ function ruleNegativeSalePayout(rows) {
   };
 }
 
+function ruleOtherDeductions(totals) {
+  if (!totals || totals.other <= RULESET.storageAttention) return null;
+  return {
+    id: 'other-attention',
+    severity: 'info',
+    title: 'Проверить прочие удержания',
+    amount: round2(totals.other),
+    count: 1,
+    items: [{ detail: `прочие удержания за период: ${round2(totals.other)} ₽ — откройте расшифровку суммы (кликабельна в кабинете) и сверьте каждую операцию по номеру документа` }],
+    argument:
+      'Сумма по графе «Удержания» заметная. Это продвижение, подписки, тарифные опции и разовые операции. ' +
+      'Откройте расшифровку и проверьте каждое списание — по оферте оно должно быть обоснованным; спорные позиции запросите на перерасчёт.',
+  };
+}
+
 function ruleStorageAttention(totals) {
   if (!totals || totals.storage <= RULESET.storageAttention) return null;
   return {
@@ -166,6 +181,7 @@ export function runRules(parsed, pnl) {
     ruleLogisticsOutlier(rows),
     ruleNegativeSalePayout(rows),
     ruleStorageAttention(pnl && pnl.totals),
+    ruleOtherDeductions(pnl && pnl.totals),
   ].filter(Boolean);
 
   const rank = { high: 0, medium: 1, info: 2 };
