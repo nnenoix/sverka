@@ -9,3 +9,8 @@ node_modules/
 # Local scratch
 *.tmp
 sample/
+
+# Real seller reports — never commit
+_local/
+*.xlsx
+!vendor/**
